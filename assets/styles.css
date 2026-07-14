@@ -105,6 +105,15 @@ textarea.field{min-height:88px;resize:vertical}
 /* Zgoda RODO – mniejszy tekst prawny */
 .opt--consent .opt__text{font-size:13px;color:var(--muted);line-height:1.45}
 
+/* Blok "co oferujemy" (pozytywny) */
+.offer{
+  background:#0f2318;border:1px solid #1f5638;border-radius:12px;
+  padding:12px 14px;margin:14px 0 4px;font-size:14px;color:#cdead6;
+}
+.offer__title{font-weight:800;color:#54d98c;margin:0 0 6px;display:flex;align-items:center;gap:7px}
+.offer ul{margin:0;padding-left:18px}
+.offer li{margin:3px 0}
+
 /* Blok wymagań */
 .reqs{
   background:#241f10;border:1px solid #4a3d14;border-radius:12px;

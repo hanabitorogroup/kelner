@@ -17,6 +17,14 @@ const FORM_CONFIG = {
     "chcemy upewnić się, że nasze oczekiwania są zbieżne. Wypełnienie ankiety zajmie Ci " +
     "tylko kilka minut. Do usłyszenia!",
 
+  // Co oferujemy (pozytywny blok – równoważy ton ogłoszenia)
+  offer: [
+    "Płatny dzień próbny — poznajemy się nawzajem, zanim podejmiesz decyzję",
+    "Stabilny, ustalony z góry grafik pracy",
+    "Przyjazny zespół i realne wsparcie na początku",
+    "Legalne zatrudnienie i możliwość stałej, długoterminowej współpracy",
+  ],
+
   // Kluczowe wymagania (pokazywane na górze, aby kandydat sam ocenił dopasowanie)
   requirements: [
     "doświadczenie w gastronomii lub obsłudze klienta",
@@ -218,8 +226,12 @@ const FORM_CONFIG = {
     {
       title: "5. O Tobie",
       questions: [
+        { id: "oczekiwania", type: "text", sheetLabel: "Oczekiwania finansowe",
+          label: "Jakie są Twoje oczekiwania finansowe?",
+          note: "Podaj np. stawkę za godzinę (zł/h) lub kwotę miesięczną.",
+          required: true },
         { id: "motywacja", type: "textarea", sheetLabel: "Dlaczego u nas",
-          label: "Dlaczego chcesz pracować właśnie u nas?", required: true,
+          label: "Dlaczego chcesz pracować właśnie u nas? (nieobowiązkowe)", required: false,
           note: "Napisz kilka słów od siebie." }
       ]
     },
@@ -258,6 +270,16 @@ function renderForm() {
   document.getElementById("form-intro").textContent = FORM_CONFIG.intro;
 
   var root = document.getElementById("form-root");
+
+  if (FORM_CONFIG.offer && FORM_CONFIG.offer.length) {
+    var offer = document.createElement("div");
+    offer.className = "offer";
+    offer.innerHTML =
+      '<p class="offer__title">✅ Co oferujemy:</p><ul>' +
+      FORM_CONFIG.offer.map(function (o) { return "<li>" + o + "</li>"; }).join("") +
+      "</ul>";
+    root.appendChild(offer);
+  }
 
   if (FORM_CONFIG.requirements && FORM_CONFIG.requirements.length) {
     var reqs = document.createElement("div");
