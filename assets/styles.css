@@ -94,6 +94,23 @@ textarea.field{min-height:88px;resize:vertical}
 .opt:has(input:checked){border-color:var(--gold);background:#241f10}
 .opt__text{font-size:15px}
 
+/* Checkbox (wybór dni) – kwadratowe zamiast okrągłych */
+.opt input[type="checkbox"]{border-radius:5px}
+.opt input[type="checkbox"]:checked::after{
+  border-radius:2px;inset:0;background:transparent;
+  content:"✓";color:var(--gold);font-size:15px;font-weight:900;
+  display:flex;align-items:center;justify-content:center;
+}
+
+/* Blok wymagań */
+.reqs{
+  background:#241f10;border:1px solid #4a3d14;border-radius:12px;
+  padding:12px 14px;margin:14px 0 4px;font-size:14px;color:#f0e2b6;
+}
+.reqs__title{font-weight:800;color:var(--gold);margin:0 0 6px;display:flex;align-items:center;gap:7px}
+.reqs ul{margin:0;padding-left:18px}
+.reqs li{margin:3px 0}
+
 /* Honeypot */
 .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 

@@ -77,10 +77,14 @@ gửi dữ liệu về Sheet.)
 ## 5. Cách chấm điểm hoạt động
 
 - Mỗi đáp án có điểm **0 / 1 / 2**. Câu hỏi thông tin (tên, SĐT, địa điểm) không tính điểm.
-- Một số đáp án là **"knockout"** (loại thẳng) vì đi ngược yêu cầu cốt lõi của công việc,
-  ví dụ: *"không muốn dọn dẹp/rửa bát"*, *"không thích tiếp xúc khách"*,
-  *"không định làm sổ sức khỏe (książeczka sanepidowska)"*, *"giờ làm không phù hợp"*.
-  Chọn bất kỳ đáp án knockout nào → tự động **Nieodpowiedni**.
+- Một số đáp án là **"knockout"** (loại thẳng) vì đi ngược yêu cầu cốt lõi. Chọn bất kỳ
+  đáp án knockout nào → tự động **Nieodpowiedni**. Hiện các tiêu chí loại thẳng gồm:
+  - **Chưa đủ 18 tuổi** hoặc **không có quyền làm việc hợp pháp** ở Ba Lan.
+  - **Không làm được cả Thứ 7 + Chủ nhật**, hoặc **chưa đủ 2 ngày trong tuần**.
+  - **Không có kinh nghiệm** (vị trí yêu cầu đã có kinh nghiệm).
+  - **Tiếng Ba Lan yếu** (không nhận đơn qua điện thoại được).
+  - Giờ làm không phù hợp; không muốn dọn dẹp/rửa bát; không thích tiếp xúc khách;
+    không muốn châm nước/sắp xếp sảnh; không định làm sổ sức khỏe (książeczka sanepidowska).
 - Nếu không dính knockout, phân loại theo **% tổng điểm**:
 
   | Kết quả          | Điều kiện        |
