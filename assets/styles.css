@@ -157,6 +157,22 @@ textarea.field{min-height:88px;resize:vertical}
 .q.invalid .field{border-color:var(--red)}
 .q.invalid .opts{outline:1px dashed var(--red);outline-offset:6px;border-radius:8px}
 
+/* Multi-step / kreator */
+.progress{margin:2px 0 20px}
+.progress__bar{height:7px;background:var(--panel-2);border:1px solid var(--line);border-radius:99px;overflow:hidden}
+.progress__fill{height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--gold),var(--gold-2));transition:width .35s ease}
+.progress__label{margin-top:7px;font-size:12px;letter-spacing:1px;color:var(--muted);text-transform:uppercase}
+.step{display:none}
+.step.step--active{display:block;animation:stepIn .28s ease}
+@keyframes stepIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.step .section__title{margin-top:0}
+.nav{display:flex;gap:10px;align-items:stretch;margin-top:24px}
+.nav .btn{margin-top:0}
+.btn--ghost{flex:0 0 auto;width:auto;background:transparent;border:1px solid var(--line);color:var(--text);box-shadow:none;padding:15px 18px}
+.btn--ghost:hover{border-color:var(--gold);filter:none}
+.btn--next{flex:1}
+.nav #submit-btn{flex:1}
+
 /* Thanks */
 .thanks{text-align:center;padding:36px 22px}
 .thanks__icon{

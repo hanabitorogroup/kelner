@@ -272,38 +272,55 @@ function allQuestions() {
   return FORM_CONFIG.sections.flatMap(function (s) { return s.questions; });
 }
 
+function buildInfoBlock(cls, titleHtml, items) {
+  var el = document.createElement("div");
+  el.className = cls;
+  el.innerHTML = titleHtml + "<ul>" +
+    items.map(function (t) { return "<li>" + t + "</li>"; }).join("") + "</ul>";
+  return el;
+}
+
 function renderForm() {
   document.getElementById("form-intro").textContent = FORM_CONFIG.intro;
 
   var root = document.getElementById("form-root");
 
-  if (FORM_CONFIG.offer && FORM_CONFIG.offer.length) {
-    var offer = document.createElement("div");
-    offer.className = "offer";
-    offer.innerHTML =
-      '<p class="offer__title">✅ Co oferujemy:</p><ul>' +
-      FORM_CONFIG.offer.map(function (o) { return "<li>" + o + "</li>"; }).join("") +
-      "</ul>";
-    root.appendChild(offer);
-  }
+  // Pasek postępu
+  var prog = document.createElement("div");
+  prog.className = "progress";
+  prog.innerHTML =
+    '<div class="progress__bar"><div class="progress__fill" id="prog-fill"></div></div>' +
+    '<div class="progress__label" id="prog-label"></div>';
+  root.appendChild(prog);
 
-  if (FORM_CONFIG.requirements && FORM_CONFIG.requirements.length) {
-    var reqs = document.createElement("div");
-    reqs.className = "reqs";
-    reqs.innerHTML =
-      '<p class="reqs__title">⚠️ Zanim zaczniesz — na tym stanowisku wymagamy:</p><ul>' +
-      FORM_CONFIG.requirements.map(function (r) { return "<li>" + r + "</li>"; }).join("") +
-      "</ul>";
-    root.appendChild(reqs);
-  }
+  // Każda sekcja = osobny krok
+  FORM_CONFIG.sections.forEach(function (section, si) {
+    var step = document.createElement("section");
+    step.className = "step";
+    step.dataset.step = si;
 
-  FORM_CONFIG.sections.forEach(function (section) {
-    var sec = document.createElement("section");
-    sec.className = "section";
-    sec.innerHTML =
-      '<h2 class="section__title">' + section.title + '</h2><hr class="section__rule" />';
-    section.questions.forEach(function (q) { sec.appendChild(renderQuestion(q)); });
-    root.appendChild(sec);
+    // Bloki "co oferujemy" i "wymagamy" tylko na pierwszym kroku
+    if (si === 0) {
+      if (FORM_CONFIG.offer && FORM_CONFIG.offer.length) {
+        step.appendChild(buildInfoBlock("offer", '<p class="offer__title">✅ Co oferujemy:</p>', FORM_CONFIG.offer));
+      }
+      if (FORM_CONFIG.requirements && FORM_CONFIG.requirements.length) {
+        step.appendChild(buildInfoBlock("reqs",
+          '<p class="reqs__title">⚠️ Zanim zaczniesz — na tym stanowisku wymagamy:</p>',
+          FORM_CONFIG.requirements));
+      }
+    }
+
+    var title = document.createElement("h2");
+    title.className = "section__title";
+    title.textContent = section.title;
+    var hr = document.createElement("hr");
+    hr.className = "section__rule";
+    step.appendChild(title);
+    step.appendChild(hr);
+
+    section.questions.forEach(function (q) { step.appendChild(renderQuestion(q)); });
+    root.appendChild(step);
   });
 }
 
@@ -390,10 +407,13 @@ function collectAnswers() {
   return answers;
 }
 
-function validate(answers) {
-  var missing = [];
+function clearInvalid() {
   document.querySelectorAll(".q.invalid").forEach(function (el) { el.classList.remove("invalid"); });
-  allQuestions().forEach(function (q) {
+}
+
+function validateQuestions(questions, answers) {
+  var missing = [];
+  questions.forEach(function (q) {
     if (!q.required) return;
     var v = answers[q.id];
     var empty;
@@ -536,9 +556,58 @@ async function sendToSheet(record, cv) {
 /* ------------------------------------------------------------------ */
 function initForm() {
   renderForm();
+
   var form = document.getElementById("ankieta");
   var errBox = document.getElementById("form-error");
-  var btn = document.getElementById("submit-btn");
+  var submitBtn = document.getElementById("submit-btn");
+  var introEl = document.getElementById("form-intro");
+  var fill = document.getElementById("prog-fill");
+  var label = document.getElementById("prog-label");
+  var steps = Array.prototype.slice.call(document.querySelectorAll(".step"));
+  var total = steps.length;
+  var current = 0;
+
+  // Pasek nawigacji: Wstecz / Dalej + przycisk wysyłki (na ostatnim kroku)
+  var nav = document.createElement("div");
+  nav.className = "nav";
+  var back = document.createElement("button");
+  back.type = "button"; back.className = "btn btn--ghost"; back.textContent = "‹ Wstecz";
+  var next = document.createElement("button");
+  next.type = "button"; next.className = "btn btn--next"; next.textContent = "Dalej ›";
+  form.insertBefore(nav, submitBtn);
+  nav.appendChild(back);
+  nav.appendChild(next);
+  nav.appendChild(submitBtn);
+
+  function showStep(i) {
+    current = Math.max(0, Math.min(total - 1, i));
+    steps.forEach(function (s, idx) { s.classList.toggle("step--active", idx === current); });
+    introEl.style.display = current === 0 ? "" : "none";
+    back.style.display = current > 0 ? "" : "none";
+    next.style.display = current < total - 1 ? "" : "none";
+    submitBtn.style.display = current === total - 1 ? "" : "none";
+    fill.style.width = Math.round(((current + 1) / total) * 100) + "%";
+    label.textContent = "Krok " + (current + 1) + " z " + total;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  back.addEventListener("click", function () { errBox.hidden = true; showStep(current - 1); });
+  next.addEventListener("click", function () {
+    errBox.hidden = true;
+    clearInvalid();
+    var answers = collectAnswers();
+    var missing = validateQuestions(FORM_CONFIG.sections[current].questions, answers);
+    if (missing.length > 0) {
+      errBox.hidden = false;
+      errBox.textContent = "Uzupełnij wymagane pola (" + missing.length + ").";
+      var f = document.querySelector(".q.invalid");
+      if (f) f.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    showStep(current + 1);
+  });
+
+  showStep(0);
 
   form.addEventListener("submit", async function (ev) {
     ev.preventDefault();
@@ -547,13 +616,18 @@ function initForm() {
     if (form.company && form.company.value) { showThanks(); return; }
 
     var answers = collectAnswers();
-    var missing = validate(answers);
+    clearInvalid();
+    var missing = validateQuestions(allQuestions(), answers);
     if (missing.length > 0) {
+      // Wróć do kroku z pierwszym brakującym polem
+      var firstQ = missing[0];
+      var stepIdx = FORM_CONFIG.sections.findIndex(function (s) {
+        return s.questions.some(function (q) { return q.id === firstQ.id; });
+      });
+      if (stepIdx > -1) showStep(stepIdx);
       errBox.hidden = false;
       errBox.textContent =
         "Uzupełnij wymagane pola (" + missing.length + "). Zaznaczone są na czerwono.";
-      var first = document.querySelector(".q.invalid");
-      if (first) first.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
 
@@ -566,8 +640,6 @@ function initForm() {
       if (f.size > maxMB * 1024 * 1024) {
         errBox.hidden = false;
         errBox.textContent = "Plik CV jest za duży (maks. " + maxMB + " MB). Wybierz mniejszy plik.";
-        var cvEl = document.querySelector('.q[data-qid="' + cvQ.id + '"]');
-        if (cvEl) { cvEl.classList.add("invalid"); cvEl.scrollIntoView({ behavior: "smooth", block: "center" }); }
         return;
       }
       try {
@@ -578,8 +650,8 @@ function initForm() {
     var result = computeResult(answers);
     var record = buildRecord(answers, result);
 
-    btn.disabled = true;
-    btn.textContent = "Wysyłanie…";
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Wysyłanie…";
     backupLocal(record);
     await sendToSheet(record, cvPayload);
     showThanks();
