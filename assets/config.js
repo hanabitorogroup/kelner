@@ -10,5 +10,5 @@
    podziękowania, ale odpowiedzi NIE będą wysyłane do arkusza.
    ========================================================================= */
 window.KELNER_CONFIG = {
-  endpointUrl: ""
+  endpointUrl: "https://script.google.com/macros/s/AKfycbymiKJzYJq0vMoM4AUnp6aalMDCtTlfOQV1GpYe387mpuc7gUDpTBDb87HalO9NPw3Z/exec"
 };
