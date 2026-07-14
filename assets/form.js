@@ -226,6 +226,12 @@ const FORM_CONFIG = {
     {
       title: "5. O Tobie",
       questions: [
+        { id: "cv", type: "file", sheetLabel: "CV",
+          label: "Załącz swoje CV (nieobowiązkowe)",
+          note: "Format PDF, JPG lub PNG. Maksymalny rozmiar 5 MB.",
+          required: false,
+          accept: ".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png",
+          maxSizeMB: 5 },
         { id: "oczekiwania", type: "text", sheetLabel: "Oczekiwania finansowe",
           label: "Jakie są Twoje oczekiwania finansowe?",
           note: "Podaj np. stawkę za godzinę (zł/h) lub kwotę miesięczną.",
@@ -342,6 +348,12 @@ function renderQuestion(q) {
     var ta = document.createElement("textarea");
     ta.className = "field"; ta.id = "f_" + q.id; ta.name = q.id; ta.rows = 3;
     wrap.appendChild(ta);
+  } else if (q.type === "file") {
+    var finp = document.createElement("input");
+    finp.className = "field field--file";
+    finp.type = "file"; finp.id = "f_" + q.id; finp.name = q.id;
+    if (q.accept) finp.accept = q.accept;
+    wrap.appendChild(finp);
   } else {
     var inp = document.createElement("input");
     inp.className = "field";
@@ -367,6 +379,9 @@ function collectAnswers() {
     } else if (q.type === "consent") {
       var box = document.getElementById("f_" + q.id);
       answers[q.id] = !!(box && box.checked);
+    } else if (q.type === "file") {
+      var fin = document.getElementById("f_" + q.id);
+      answers[q.id] = (fin && fin.files && fin.files.length) ? fin.files[0] : null;
     } else {
       var el = document.getElementById("f_" + q.id);
       answers[q.id] = el ? el.value.trim() : "";
@@ -457,6 +472,9 @@ function buildRecord(answers, result) {
       record[q.sheetLabel] = (v || []).map(function (i) { return q.options[i].label; }).join(", ");
     } else if (q.type === "consent") {
       record[q.sheetLabel] = v ? "Tak" : "Nie";
+    } else if (q.type === "file") {
+      // Nazwa pliku; właściwy link do Drive uzupełnia Apps Script.
+      record[q.sheetLabel] = (v && v.name) ? v.name : "";
     } else {
       record[q.sheetLabel] = v || "";
     }
@@ -482,7 +500,20 @@ function backupLocal(record) {
   } catch (e) { /* ignore */ }
 }
 
-async function sendToSheet(record) {
+function readFileAsBase64(file) {
+  return new Promise(function (resolve, reject) {
+    var reader = new FileReader();
+    reader.onload = function () {
+      var res = String(reader.result);
+      var comma = res.indexOf(",");
+      resolve(comma > -1 ? res.substring(comma + 1) : res);
+    };
+    reader.onerror = function () { reject(reader.error); };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function sendToSheet(record, cv) {
   var url = ((window.KELNER_CONFIG && window.KELNER_CONFIG.endpointUrl) || "").trim();
   if (!url) {
     console.warn("[KELNER] Brak endpointUrl w assets/config.js – odpowiedź nie została wysłana do arkusza.");
@@ -493,7 +524,7 @@ async function sendToSheet(record) {
       method: "POST",
       mode: "no-cors",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ record: record })
+      body: JSON.stringify({ record: record, cv: cv || null })
     });
   } catch (e) {
     console.warn("[KELNER] Błąd wysyłki:", e);
@@ -526,13 +557,31 @@ function initForm() {
       return;
     }
 
+    // CV: walidacja rozmiaru + odczyt do base64 (opcjonalnie)
+    var cvPayload = null;
+    var cvQ = allQuestions().find(function (q) { return q.type === "file"; });
+    if (cvQ && answers[cvQ.id]) {
+      var f = answers[cvQ.id];
+      var maxMB = cvQ.maxSizeMB || 5;
+      if (f.size > maxMB * 1024 * 1024) {
+        errBox.hidden = false;
+        errBox.textContent = "Plik CV jest za duży (maks. " + maxMB + " MB). Wybierz mniejszy plik.";
+        var cvEl = document.querySelector('.q[data-qid="' + cvQ.id + '"]');
+        if (cvEl) { cvEl.classList.add("invalid"); cvEl.scrollIntoView({ behavior: "smooth", block: "center" }); }
+        return;
+      }
+      try {
+        cvPayload = { filename: f.name, mimeType: f.type || "application/octet-stream", data: await readFileAsBase64(f) };
+      } catch (e) { cvPayload = null; }
+    }
+
     var result = computeResult(answers);
     var record = buildRecord(answers, result);
 
     btn.disabled = true;
     btn.textContent = "Wysyłanie…";
     backupLocal(record);
-    await sendToSheet(record);
+    await sendToSheet(record, cvPayload);
     showThanks();
   });
 }

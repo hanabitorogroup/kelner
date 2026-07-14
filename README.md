@@ -39,6 +39,7 @@ Muốn **đổi câu hỏi hoặc điểm**: sửa `FORM_CONFIG` trong `assets/f
    - **Thực thi với tư cách (Execute as):** *Tôi (Me)*.
    - **Ai có quyền truy cập (Who has access):** *Bất kỳ ai (Anyone)*.
    - Bấm **Triển khai**, cấp quyền (Authorize) cho tài khoản Google của bạn.
+     *(Lần cấp quyền này sẽ xin cả quyền Google Drive — để lưu file CV ứng viên gửi lên.)*
 6. Copy đường link **Web app URL** dạng:
    `https://script.google.com/macros/s/AKfyc..../exec`
 
@@ -108,3 +109,18 @@ Mẹo: trong Sheet dùng **Dữ liệu → Tạo bộ lọc**, lọc cột `Klas
 2. Mở Google Sheet → phải thấy một dòng mới với đầy đủ câu trả lời + điểm.
 3. Nếu chưa thấy: kiểm tra lại `endpointUrl` trong `config.js` và quyền truy cập
    **Anyone** ở bước triển khai Apps Script.
+
+---
+
+## 7. CV (tệp đính kèm — tùy chọn)
+
+- Ứng viên có thể đính kèm **CV** (PDF/JPG/PNG, tối đa 5MB) — không bắt buộc.
+- Khi có CV, Apps Script tự lưu file vào một thư mục Google Drive tên
+  **"Rekrutacja KING LONG - CV"** (tự tạo lần đầu) và ghi **link** vào cột **CV**
+  của Sheet. Bạn bấm vào link trong Sheet để mở CV.
+- File CV **để ở chế độ riêng tư** (chỉ tài khoản của bạn mở được), không chia sẻ
+  công khai — hợp với RODO.
+- Muốn đổi thư mục/định dạng/dung lượng: sửa `CV_FOLDER_NAME` trong
+  `apps-script/Code.gs`, và `accept` / `maxSizeMB` của câu `cv` trong `assets/form.js`.
+- ⚠️ Do là trang tĩnh, file **quá lớn có thể gửi lỗi âm thầm** — vì vậy giới hạn 5MB
+  và để CV là tùy chọn. Ứng viên không có CV vẫn nộp được bình thường.
