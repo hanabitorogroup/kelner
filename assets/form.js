@@ -96,15 +96,6 @@ const FORM_CONFIG = {
             { label: "Nie, te godziny mi nie odpowiadają.", score: 0, knockout: true }
           ] },
 
-        { id: "dojazd", type: "radio", sheetLabel: "Dojazd",
-          label: "Czy masz zapewniony stabilny i punktualny dojazd do wybranej restauracji?",
-          required: true, scored: true,
-          options: [
-            { label: "Tak, mieszkam blisko / mam własny transport.", score: 2 },
-            { label: "Tak, dojeżdżam komunikacją i rozkład pozwala mi na punktualność.", score: 2 },
-            { label: "Dojazd może być dla mnie problemem.", score: 0 }
-          ] },
-
         { id: "start", type: "radio", sheetLabel: "Możliwy start",
           label: "Kiedy możesz rozpocząć pracę?", required: true, scored: true,
           options: [
@@ -145,22 +136,15 @@ const FORM_CONFIG = {
             { label: "Słaby polski lub duży stres – rozmowy telefoniczne są dla mnie trudne.", score: 0, knockout: true }
           ] },
 
-        { id: "kasa", type: "radio", sheetLabel: "Kasa fiskalna / gotówka",
-          label: "Czy masz doświadczenie w obsłudze kasy fiskalnej i rozliczaniu gotówki (wydawanie reszty)?",
+        { id: "stanowisko_kasowe", type: "radio", sheetLabel: "Kasa / systemy zamówień",
+          label: "Jak oceniasz swoje umiejętności przy stanowisku kasowym — obsługa kasy fiskalnej, " +
+            "rozliczanie gotówki (wydawanie reszty) oraz zamówienia z aplikacji dostawczych " +
+            "(Pyszne.pl, Glovo, Bolt Food, Uber Eats)?",
           required: true, scored: true,
           options: [
-            { label: "Tak, obsługiwałam/-em kasę fiskalną i swobodnie rozliczam gotówkę.", score: 2 },
-            { label: "Nie obsługiwałam/-em kasy fiskalnej, ale dobrze liczę i szybko się nauczę.", score: 1 },
-            { label: "Nie czuję się pewnie w obsłudze kasy i rozliczaniu pieniędzy.", score: 0 }
-          ] },
-
-        { id: "aplikacje", type: "radio", sheetLabel: "Aplikacje dostawcze",
-          label: "Czy potrafisz obsługiwać zamówienia z aplikacji dostawczych (Pyszne.pl, Glovo, Bolt Food, Uber Eats)?",
-          required: true, scored: true,
-          options: [
-            { label: "Tak, mam doświadczenie z aplikacjami dostawczymi.", score: 2 },
-            { label: "Nie, ale szybko nauczę się ich obsługi.", score: 1 },
-            { label: "Nie znam się na tym i wolę tego unikać.", score: 0 }
+            { label: "Mam doświadczenie z kasą fiskalną, gotówką i aplikacjami dostawczymi.", score: 2 },
+            { label: "Nie ze wszystkim, ale dobrze liczę i szybko uczę się nowych systemów.", score: 1 },
+            { label: "Nie czuję się pewnie w obsłudze kasy i takich aplikacji.", score: 0 }
           ] },
 
         { id: "godziny_szczytu", type: "radio", sheetLabel: "Godziny szczytu",
@@ -198,26 +182,17 @@ const FORM_CONFIG = {
             { label: "Mam problem z punktualnością lub nie lubię intensywnego kontaktu z klientem.", score: 0, knockout: true }
           ] },
 
-        { id: "organizacja", type: "radio", sheetLabel: "Organizacja sali / lodówka",
+        { id: "utrzymanie", type: "radio", sheetLabel: "Utrzymanie porządku i zaopatrzenia",
           label:
-            "Ważnym zadaniem jest pilnowanie, aby lodówka z napojami była ZAWSZE pełna — gdy klienci " +
-            "wezmą napoje, na bieżąco uzupełniasz je z magazynu, aby klient miał zawsze wybór. Do tego " +
-            "dochodzi przecieranie i dokładanie sztućców oraz nalewanie sosów do dzbanków. Jak do tego podchodzisz?",
+            "Praca obejmuje utrzymanie porządku i zaopatrzenia: pilnowanie, aby lodówka z napojami była " +
+            "ZAWSZE pełna (uzupełnianie z magazynu, gdy klienci wezmą napoje), przecieranie i dokładanie " +
+            "sztućców, nalewanie sosów do dzbanków, a także wycieranie stolików, polerowanie szklanek, " +
+            "mycie naczyń, porządek w toalecie (papier), mycie parapetów na zewnątrz oraz sprzątanie " +
+            "wokół kasy i wydawki. Czy jesteś na to gotowa/-y?",
           required: true, scored: true,
           options: [
-            { label: "Rozumiem, że to ważne dla klienta — będę na bieżąco tego pilnować.", score: 2 },
-            { label: "Wolę skupić się wyłącznie na kasie, nie chcę pilnować takich rzeczy.", score: 0, knockout: true }
-          ] },
-
-        { id: "czystosc", type: "radio", sheetLabel: "Czystość / sprzątanie",
-          label:
-            "Nasz standard to nienaganna czystość: wycieranie stolików, polerowanie szklanek, mycie " +
-            "naczyń, porządek w toalecie (papier), mycie parapetów na zewnątrz oraz sprzątanie wokół " +
-            "kasy i wydawki. Czy jesteś na to gotowa/-y?",
-          required: true, scored: true,
-          options: [
-            { label: "Tak, czystość miejsca pracy jest dla mnie ważna i naturalna.", score: 2 },
-            { label: "Mogę wyczyścić stanowisko kasowe, ale nie chcę myć naczyń / sprzątać toalet.", score: 0, knockout: true }
+            { label: "Tak, dbanie o czystość i pełne zaopatrzenie jest dla mnie naturalne.", score: 2 },
+            { label: "Wolę zajmować się tylko kasą, nie chcę sprzątać ani uzupełniać zaopatrzenia.", score: 0, knockout: true }
           ] },
 
         { id: "menu", type: "radio", sheetLabel: "Menu / alergeny",
@@ -245,9 +220,7 @@ const FORM_CONFIG = {
       questions: [
         { id: "motywacja", type: "textarea", sheetLabel: "Dlaczego u nas",
           label: "Dlaczego chcesz pracować właśnie u nas?", required: true,
-          note: "Napisz kilka słów od siebie." },
-        { id: "uwagi", type: "textarea", sheetLabel: "Uwagi kandydata",
-          label: "Chcesz coś jeszcze dodać? (nieobowiązkowe)", required: false }
+          note: "Napisz kilka słów od siebie." }
       ]
     },
 
@@ -256,13 +229,13 @@ const FORM_CONFIG = {
       questions: [
         { id: "rodo", type: "consent", sheetLabel: "Zgoda RODO",
           label: "Zgoda na przetwarzanie danych osobowych (RODO)", required: true,
-          // UWAGA: podmień poniżej na pełną nazwę prawną firmy (i ewentualnie NIP),
-          // jeśli różni się od nazwy restauracji.
           consentText:
-            "Wyrażam zgodę na przetwarzanie moich danych osobowych podanych w tej ankiecie przez " +
-            "KING LONG – Azjatycki Smak (ul. Strzelna 7, 55-200 Oława) w celu przeprowadzenia procesu " +
-            "rekrutacji, zgodnie z RODO (rozporządzenie UE 2016/679). Podanie danych jest dobrowolne; " +
-            "mam prawo dostępu do swoich danych oraz żądania ich usunięcia." }
+            "Administratorem Twoich danych osobowych jest HANABI & TORO GROUP Sp. z o.o., " +
+            "ul. Radarowa 52, 02-137 Warszawa (NIP 5223373195, KRS 0001240774). Wyrażam zgodę na " +
+            "przetwarzanie moich danych osobowych podanych w tej ankiecie w celu przeprowadzenia procesu " +
+            "rekrutacji na stanowisko w restauracji KING LONG, zgodnie z RODO (rozporządzenie UE 2016/679). " +
+            "Podanie danych jest dobrowolne; mam prawo dostępu do swoich danych, ich sprostowania oraz " +
+            "żądania usunięcia." }
       ]
     }
   ]
