@@ -7,14 +7,9 @@
  *   - Wykonaj jako: Ja
  *   - Dostęp: Wszyscy (Anyone)
  * Skopiuj wygenerowany URL ".../exec" i wklej go do assets/config.js.
- *
- * Przesłane CV są zapisywane w folderze Google Drive (tworzonym automatycznie),
- * a link do pliku trafia do kolumny "CV" w arkuszu. Pliki pozostają prywatne
- * (dostępne dla właściciela konta) – nie są udostępniane publicznie.
  */
 
 var SHEET_NAME = 'Odpowiedzi';
-var CV_FOLDER_NAME = 'Rekrutacja KING LONG - CV';
 
 function doPost(e) {
   var lock = LockService.getScriptLock();
@@ -26,21 +21,6 @@ function doPost(e) {
 
     var payload = JSON.parse(e.postData.contents);
     var record = payload.record || {};
-
-    // Zapis CV do Drive (jeśli przesłano) i wstawienie linku do rekordu.
-    if (payload.cv && payload.cv.data) {
-      try {
-        var folder = getCvFolder_();
-        var bytes = Utilities.base64Decode(payload.cv.data);
-        var safeName = buildFileName_(record, payload.cv.filename);
-        var blob = Utilities.newBlob(bytes, payload.cv.mimeType || 'application/octet-stream', safeName);
-        var file = folder.createFile(blob);
-        record['CV'] = file.getUrl();
-      } catch (cvErr) {
-        record['CV'] = 'BŁĄD ZAPISU CV: ' + cvErr;
-      }
-    }
-
     var keys = Object.keys(record);
 
     // Nagłówki – tworzone przy pierwszym zgłoszeniu na podstawie kluczy rekordu.
@@ -69,20 +49,6 @@ function doGet() {
   return ContentService.createTextOutput(
     'KING LONG – endpoint rekrutacyjny dziala. Uzyj metody POST.'
   );
-}
-
-/** Znajduje (lub tworzy) folder na CV w Google Drive. */
-function getCvFolder_() {
-  var it = DriveApp.getFoldersByName(CV_FOLDER_NAME);
-  return it.hasNext() ? it.next() : DriveApp.createFolder(CV_FOLDER_NAME);
-}
-
-/** Buduje czytelną nazwę pliku: "Imię Nazwisko - oryginalna_nazwa". */
-function buildFileName_(record, original) {
-  var name = (record['Imię i nazwisko'] || 'kandydat').toString()
-    .replace(/[\\/:*?"<>|]/g, ' ').trim();
-  var orig = (original || 'cv').toString().replace(/[\\/:*?"<>|]/g, ' ').trim();
-  return name + ' - ' + orig;
 }
 
 function json(obj) {
