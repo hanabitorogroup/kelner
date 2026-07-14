@@ -102,6 +102,9 @@ textarea.field{min-height:88px;resize:vertical}
   display:flex;align-items:center;justify-content:center;
 }
 
+/* Zgoda RODO – mniejszy tekst prawny */
+.opt--consent .opt__text{font-size:13px;color:var(--muted);line-height:1.45}
+
 /* Blok wymagań */
 .reqs{
   background:#241f10;border:1px solid #4a3d14;border-radius:12px;

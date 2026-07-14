@@ -6,7 +6,8 @@
    Punktacja odpowiedzi (radio):
      - score: liczba punktów (0–2)
      - knockout: true  -> odpowiedź dyskwalifikująca (od razu "Nieodpowiedni")
-   Pytanie typu "checkbox" (wybór dni) ma własną funkcję evaluate().
+   Typy pytań: text, tel, email, textarea, radio, checkbox (wybór dni),
+               consent (zgoda RODO – wymagana do wysłania).
    ========================================================================= */
 
 const FORM_CONFIG = {
@@ -14,7 +15,7 @@ const FORM_CONFIG = {
     "Cześć! Dziękujemy za Twoje zgłoszenie. Szanujemy czas naszych kandydatów, " +
     "dlatego przed zaproszeniem na płatny dzień próbny w naszej restauracji azjatyckiej " +
     "chcemy upewnić się, że nasze oczekiwania są zbieżne. Wypełnienie ankiety zajmie Ci " +
-    "tylko 2 minuty. Do usłyszenia!",
+    "tylko kilka minut. Do usłyszenia!",
 
   // Kluczowe wymagania (pokazywane na górze, aby kandydat sam ocenił dopasowanie)
   requirements: [
@@ -123,7 +124,7 @@ const FORM_CONFIG = {
     },
 
     {
-      title: "3. Doświadczenie i komunikacja",
+      title: "3. Doświadczenie i umiejętności",
       questions: [
         { id: "doswiadczenie", type: "radio", sheetLabel: "Doświadczenie",
           label: "Czy masz doświadczenie w gastronomii lub bezpośredniej obsłudze klienta?",
@@ -135,22 +136,40 @@ const FORM_CONFIG = {
             { label: "Nie mam żadnego doświadczenia.", score: 0, knockout: true }
           ] },
 
-        { id: "jezyk_polski", type: "radio", sheetLabel: "Język polski",
-          label: "Jak oceniasz swój poziom języka polskiego (rozmowy telefoniczne z klientami)?",
+        { id: "komunikacja_tel", type: "radio", sheetLabel: "Polski / rozmowy telefoniczne",
+          label: "Jak oceniasz swój język polski w rozmowach telefonicznych z klientami (przyjmowanie zamówień)?",
           required: true, scored: true,
           options: [
-            { label: "Bardzo dobry / ojczysty – swobodnie rozmawiam przez telefon.", score: 2 },
-            { label: "Dobry / komunikatywny – poradzę sobie z zamówieniami.", score: 1 },
-            { label: "Podstawowy / słaby – mam trudności w rozmowie.", score: 0, knockout: true }
+            { label: "Bardzo dobry – swobodnie i bez stresu rozmawiam z klientami przez telefon.", score: 2 },
+            { label: "Komunikatywny – poradzę sobie z zamówieniami, choć czasem się stresuję.", score: 1 },
+            { label: "Słaby polski lub duży stres – rozmowy telefoniczne są dla mnie trudne.", score: 0, knockout: true }
           ] },
 
-        { id: "telefon_obsluga", type: "radio", sheetLabel: "Rozmowy telefoniczne",
-          label: "Jak czujesz się przy przyjmowaniu zamówień telefonicznych od klientów?",
+        { id: "kasa", type: "radio", sheetLabel: "Kasa fiskalna / gotówka",
+          label: "Czy masz doświadczenie w obsłudze kasy fiskalnej i rozliczaniu gotówki (wydawanie reszty)?",
           required: true, scored: true,
           options: [
-            { label: "Bardzo dobrze – jestem otwarta/-y, komunikatywna/-y i nie stresuję się.", score: 2 },
-            { label: "Dobrze – poradzę sobie, szybko się uczę.", score: 1 },
-            { label: "Stresuję się podczas rozmów telefonicznych.", score: 0 }
+            { label: "Tak, obsługiwałam/-em kasę fiskalną i swobodnie rozliczam gotówkę.", score: 2 },
+            { label: "Nie obsługiwałam/-em kasy fiskalnej, ale dobrze liczę i szybko się nauczę.", score: 1 },
+            { label: "Nie czuję się pewnie w obsłudze kasy i rozliczaniu pieniędzy.", score: 0 }
+          ] },
+
+        { id: "aplikacje", type: "radio", sheetLabel: "Aplikacje dostawcze",
+          label: "Czy potrafisz obsługiwać zamówienia z aplikacji dostawczych (Pyszne.pl, Glovo, Bolt Food, Uber Eats)?",
+          required: true, scored: true,
+          options: [
+            { label: "Tak, mam doświadczenie z aplikacjami dostawczymi.", score: 2 },
+            { label: "Nie, ale szybko nauczę się ich obsługi.", score: 1 },
+            { label: "Nie znam się na tym i wolę tego unikać.", score: 0 }
+          ] },
+
+        { id: "godziny_szczytu", type: "radio", sheetLabel: "Godziny szczytu",
+          label: "Jak reagujesz, gdy w restauracji jest bardzo dużo klientów naraz (godziny szczytu)?",
+          required: true, scored: true,
+          options: [
+            { label: "Zachowuję spokój, ustalam priorytety i działam szybko – lubię takie tempo.", score: 2 },
+            { label: "Radzę sobie, choć bywa stresująco.", score: 1 },
+            { label: "Duży ruch mocno mnie stresuje i się gubię.", score: 0 }
           ] },
 
         { id: "multitasking", type: "radio", sheetLabel: "Multitasking",
@@ -167,7 +186,7 @@ const FORM_CONFIG = {
     },
 
     {
-      title: "4. Standardy pracy (kluczowe)",
+      title: "4. Standardy i podejście do pracy",
       questions: [
         { id: "zasady", type: "radio", sheetLabel: "Zasady (punktualność + kultura)",
           label:
@@ -201,6 +220,15 @@ const FORM_CONFIG = {
             { label: "Mogę wyczyścić stanowisko kasowe, ale nie chcę myć naczyń / sprzątać toalet.", score: 0, knockout: true }
           ] },
 
+        { id: "menu", type: "radio", sheetLabel: "Menu / alergeny",
+          label: "Czy jesteś gotowa/-y nauczyć się naszego menu i składników dań (w tym alergenów), aby doradzać klientom?",
+          required: true, scored: true,
+          options: [
+            { label: "Tak, chętnie nauczę się menu i informacji o alergenach.", score: 2 },
+            { label: "Nauczę się podstaw, ale wolę nie doradzać w sprawie składników.", score: 1 },
+            { label: "Nie chcę uczyć się menu ani składników.", score: 0 }
+          ] },
+
         { id: "sanepid", type: "radio", sheetLabel: "Książeczka sanepidowska",
           label: "Czy posiadasz aktualną książeczkę sanepidowską (do celów sanitarno-epidemiologicznych)?",
           required: true, scored: true,
@@ -213,10 +241,28 @@ const FORM_CONFIG = {
     },
 
     {
-      title: "5. Dodatkowo",
+      title: "5. O Tobie",
       questions: [
+        { id: "motywacja", type: "textarea", sheetLabel: "Dlaczego u nas",
+          label: "Dlaczego chcesz pracować właśnie u nas?", required: true,
+          note: "Napisz kilka słów od siebie." },
         { id: "uwagi", type: "textarea", sheetLabel: "Uwagi kandydata",
-          label: "Chcesz coś dodać? (nieobowiązkowe)", required: false }
+          label: "Chcesz coś jeszcze dodać? (nieobowiązkowe)", required: false }
+      ]
+    },
+
+    {
+      title: "6. Zgoda",
+      questions: [
+        { id: "rodo", type: "consent", sheetLabel: "Zgoda RODO",
+          label: "Zgoda na przetwarzanie danych osobowych (RODO)", required: true,
+          // UWAGA: podmień poniżej na pełną nazwę prawną firmy (i ewentualnie NIP),
+          // jeśli różni się od nazwy restauracji.
+          consentText:
+            "Wyrażam zgodę na przetwarzanie moich danych osobowych podanych w tej ankiecie przez " +
+            "KING LONG – Azjatycki Smak (ul. Strzelna 7, 55-200 Oława) w celu przeprowadzenia procesu " +
+            "rekrutacji, zgodnie z RODO (rozporządzenie UE 2016/679). Podanie danych jest dobrowolne; " +
+            "mam prawo dostępu do swoich danych oraz żądania ich usunięcia." }
       ]
     }
   ]
@@ -240,7 +286,6 @@ function renderForm() {
 
   var root = document.getElementById("form-root");
 
-  // Blok wymagań
   if (FORM_CONFIG.requirements && FORM_CONFIG.requirements.length) {
     var reqs = document.createElement("div");
     reqs.className = "reqs";
@@ -286,6 +331,18 @@ function renderQuestion(q) {
       opts.appendChild(label);
     });
     wrap.appendChild(opts);
+  } else if (q.type === "consent") {
+    var box = document.createElement("div");
+    box.className = "opts";
+    var cid = "f_" + q.id;
+    var clabel = document.createElement("label");
+    clabel.className = "opt opt--consent";
+    clabel.setAttribute("for", cid);
+    clabel.innerHTML =
+      '<input type="checkbox" id="' + cid + '" name="' + q.id + '" value="1" />' +
+      '<span class="opt__text">' + q.consentText + "</span>";
+    box.appendChild(clabel);
+    wrap.appendChild(box);
   } else if (q.type === "textarea") {
     var ta = document.createElement("textarea");
     ta.className = "field"; ta.id = "f_" + q.id; ta.name = q.id; ta.rows = 3;
@@ -312,6 +369,9 @@ function collectAnswers() {
     } else if (q.type === "checkbox") {
       var boxes = document.querySelectorAll('input[name="' + q.id + '"]:checked');
       answers[q.id] = Array.prototype.map.call(boxes, function (b) { return parseInt(b.value, 10); });
+    } else if (q.type === "consent") {
+      var box = document.getElementById("f_" + q.id);
+      answers[q.id] = !!(box && box.checked);
     } else {
       var el = document.getElementById("f_" + q.id);
       answers[q.id] = el ? el.value.trim() : "";
@@ -329,6 +389,7 @@ function validate(answers) {
     var empty;
     if (q.type === "radio") empty = (v === null);
     else if (q.type === "checkbox") empty = (!v || v.length === 0);
+    else if (q.type === "consent") empty = (v !== true);
     else empty = (!v);
     if (empty) {
       missing.push(q);
@@ -399,6 +460,8 @@ function buildRecord(answers, result) {
       record[q.sheetLabel] = (v === null || v === undefined) ? "" : q.options[v].label;
     } else if (q.type === "checkbox") {
       record[q.sheetLabel] = (v || []).map(function (i) { return q.options[i].label; }).join(", ");
+    } else if (q.type === "consent") {
+      record[q.sheetLabel] = v ? "Tak" : "Nie";
     } else {
       record[q.sheetLabel] = v || "";
     }
@@ -455,7 +518,6 @@ function initForm() {
     ev.preventDefault();
     errBox.hidden = true;
 
-    // Honeypot: jeśli wypełnione -> bot, cicho udajemy sukces
     if (form.company && form.company.value) { showThanks(); return; }
 
     var answers = collectAnswers();
