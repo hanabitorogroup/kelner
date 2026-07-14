@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Ankieta rekrutacyjna – KING LONG</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <main class="wrap">
+    <header class="brand">
+      <div class="brand__logo">
+        <span class="brand__king">KING</span><span class="brand__long">LONG</span>
+      </div>
+      <div class="brand__sub">Azjatycki Smak</div>
+      <div class="brand__addr">ul. Strzelna 7, 55-200 Oława &nbsp;•&nbsp; ul. Kiełczowska 64c, Wrocław</div>
+    </header>
+
+    <!-- Formularz renderowany przez assets/form.js -->
+    <form id="ankieta" class="card" novalidate>
+      <div id="form-intro" class="intro"></div>
+      <div id="form-root"></div>
+
+      <!-- Honeypot antyspamowy (ukryty) -->
+      <div class="hp" aria-hidden="true">
+        <label>Nie wypełniaj tego pola
+          <input type="text" name="company" tabindex="-1" autocomplete="off" />
+        </label>
+      </div>
+
+      <div id="form-error" class="form-error" role="alert" hidden></div>
+
+      <button type="submit" id="submit-btn" class="btn">Wyślij ankietę</button>
+      <p class="privacy">Twoje dane wykorzystamy wyłącznie w procesie rekrutacji.</p>
+    </form>
+
+    <!-- Ekran podziękowania -->
+    <section id="thank-you" class="card thanks" hidden>
+      <div class="thanks__icon">✓</div>
+      <h2>Dziękujemy za wypełnienie ankiety!</h2>
+      <p>Twoje zgłoszenie zostało zapisane. Skontaktujemy się z wybranymi kandydatami, aby zaprosić ich na płatny dzień próbny.</p>
+      <p class="thanks__sign">Zespół KING LONG</p>
+    </section>
+
+    <footer class="foot">KING LONG • Azjatycki Smak</footer>
+  </main>
+
+  <script src="assets/config.js"></script>
+  <script src="assets/form.js"></script>
+</body>
+</html>
